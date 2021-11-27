@@ -7,9 +7,12 @@ import ShopPage from "./pages/shop/shop.components";
 import Header from "./components/header/header.component";
 import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+import { connect } from "react-redux";
+import { setCurrentUser } from "./redux/user/user.actions";
 
-const App = () => {
-  const [currentUser, setCurrentUser] = useState("");
+const App = (props) => {
+  console.log("props:" + props);
+  const { setCurrentUser } = props;
 
   useEffect(() => {
     const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
@@ -21,7 +24,6 @@ const App = () => {
             id: snapshot.id,
             ...snapshot.data(),
           });
-          console.log("test: " + currentUser);
         });
       } else {
         setCurrentUser(user);
@@ -36,7 +38,7 @@ const App = () => {
 
   return (
     <div>
-      <Header currentUser={currentUser} />
+      <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
@@ -47,4 +49,8 @@ const App = () => {
   );
 };
 
-export default App;
+const mapDispatchToProps = (dispatch) => ({
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
+});
+
+export default connect(null, mapDispatchToProps)(App);
