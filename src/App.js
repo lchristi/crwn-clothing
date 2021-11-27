@@ -29,6 +29,7 @@ const App = () => {
     });
 
     return () => {
+      //this is equivalent to class based component's componentWillUnmount lifecycle
       unsubscribeFromAuth();
     };
   }, []);

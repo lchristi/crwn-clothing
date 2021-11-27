@@ -53,7 +53,11 @@ export class SignIn extends Component {
             required
           />
           <Button type="submit">Sign In</Button>
-          <Button onClick={signInWithGoogle} isGoogleButton={true}>
+          <Button
+            type="button"
+            onClick={signInWithGoogle}
+            isGoogleButton={true}
+          >
             Sign In With Google
           </Button>
         </form>
