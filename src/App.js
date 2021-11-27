@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.css";
 import HomePage from "./pages/homepage/homepage.component";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
 import HatsPage from "./pages/hats/hats.component";
 import ShopPage from "./pages/shop/shop.components";
 import Header from "./components/header/header.component";
@@ -11,7 +11,7 @@ import { connect } from "react-redux";
 import { setCurrentUser } from "./redux/user/user.actions";
 
 const App = (props) => {
-  console.log("props:" + props);
+  console.log("props:" + props.currentUser);
   const { setCurrentUser } = props;
 
   useEffect(() => {
@@ -43,14 +43,24 @@ const App = (props) => {
         <Route path="/" element={<HomePage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/shop/hats" element={<HatsPage />} />
-        <Route path="/signin" element={<SignInAndSignUp />} />
+        <Route
+          exact
+          path="/signin"
+          element={
+            props.currentUser ? <Navigate to="/" /> : <SignInAndSignUp />
+          }
+        />
       </Routes>
     </div>
   );
 };
 
+const mapStateToProps = ({ user }) => ({
+  currentUser: user.currentUser,
+});
+
 const mapDispatchToProps = (dispatch) => ({
   setCurrentUser: (user) => dispatch(setCurrentUser(user)),
 });
 
-export default connect(null, mapDispatchToProps)(App);
+export default connect(mapStateToProps, mapDispatchToProps)(App);
