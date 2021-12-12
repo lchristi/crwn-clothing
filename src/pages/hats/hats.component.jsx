@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-
+import { useParams } from "react-router";
 const HatsPage = (props) => {
+  let {id} = useParams();
   return (
     //match - url: is the url of component - as in path
     //since HatsPage path is /hats - the url will be /hats
@@ -8,7 +9,7 @@ const HatsPage = (props) => {
     <div>
       <Link to="/">Home</Link>
       <br />
-      <h1>Hats Page</h1>
+      <h1>Hats Page: {id}</h1>
     </div>
   );
 };

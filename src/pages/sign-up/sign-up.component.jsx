@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import FormInput from "../../components/form-input/form-input.component";
 import Button from "../../components/Button/Button.component";
 
-import {
-  aut,
+import {  
   auth,
   createUserProfileDocument,
 } from "../../firebase/firebase.utils";
@@ -15,8 +14,7 @@ const SignUp = () => {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfPassword] = useState("");
-  const [name, setName] = useState("");
+  const [confirmPassword, setConfPassword] = useState("");  
 
   function ResetState() {
     setDisplayName("");

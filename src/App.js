@@ -10,16 +10,12 @@ import CheckoutPage from "./pages/checkout/checkout.component";
 
 import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
 import { connect } from "react-redux";
-import { setCurrentUser, setIsAdmin } from "./redux/user/user.actions";
+import { setCurrentUser } from "./redux/user/user.actions";
 
 const App = (props) => {
-  const { setCurrentUser } = props;
-  const { setIsAdmin } = props;
+  const { setCurrentUser } = props;  
 
-  useEffect(() => {
-    setIsAdmin(true);
-    console.log("setIsAdmin: " + props.isAdmin);
-    console.log("this.props.user: " + setIsAdmin);
+  useEffect(() => {    
     const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
       if (user) {
         const userRef = await createUserProfileDocument(user);
@@ -39,20 +35,19 @@ const App = (props) => {
       //this is equivalent to class based component's componentWillUnmount lifecycle
       unsubscribeFromAuth();
     };
-  }, []);
+  }, [setCurrentUser]);
 
   return (
     <div>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/shop" element={<ShopPage />} />
+        <Route  path="/shop/*" element={<ShopPage />} />
         <Route exact path="/checkout" element={<CheckoutPage />} />
-        <Route
-          exact
-          path="/shop/hats"
-          element={props.isAdmin === false ? <Navigate to="/" /> : <HatsPage />}
-        />
+        {/* <Route          
+          path="/shop/hats/*"
+          element={ <HatsPage />}
+        /> */}
         <Route
           exact
           path="/signin"
@@ -71,8 +66,7 @@ const mapStateToProps = ({ user }) => ({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),
-  setIsAdmin: (admin) => dispatch(setIsAdmin(admin)),
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),  
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
