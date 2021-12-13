@@ -43,11 +43,7 @@ const App = (props) => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route  path="/shop/*" element={<ShopPage />} />
-        <Route exact path="/checkout" element={<CheckoutPage />} />
-        {/* <Route          
-          path="/shop/hats/*"
-          element={ <HatsPage />}
-        /> */}
+        <Route exact path="/checkout" element={<CheckoutPage />} />     
         <Route
           exact
           path="/signin"
@@ -55,8 +51,9 @@ const App = (props) => {
             props.currentUser ? <Navigate to="/" /> : <SignInAndSignUp />
           }
         />
-      </Routes>
+      </Routes>            
     </div>
+    
   );
 };
 
