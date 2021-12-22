@@ -2,19 +2,31 @@ import React, { useEffect } from "react";
 import "./App.css";
 import HomePage from "./pages/homepage/homepage.component";
 import { Route, Routes, Navigate } from "react-router-dom";
-import HatsPage from "./pages/hats/hats.component";
 import ShopPage from "./pages/shop/shop.components";
 import Header from "./components/header/header.component";
 import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import CheckoutPage from "./pages/checkout/checkout.component";
 
-import { auth, createUserProfileDocument } from "./firebase/firebase.utils";
+import { auth, createUserProfileDocument, addCollectionAndDocuments } from "./firebase/firebase.utils";
 import { connect } from "react-redux";
 import { setCurrentUser } from "./redux/user/user.actions";
+import { selectCollectionsForPreview } from "./redux/shop/shop.selector";
+
+//allows you to create reusable styled components 
+import styled from 'styled-components';
+import { createStructuredSelector } from "reselect";
+import { selectCurrentUser } from "./redux/user/user.selector";
+
+//using CSS in JS
+const Text = styled.div`
+color:red;
+font-size:28px;
+border:${({isActive}) => isActive ? '1px solid black' : '3px dotted black'};
+`;
+
 
 const App = (props) => {
-  const { setCurrentUser } = props;  
-
+  const { setCurrentUser } = props;    
   useEffect(() => {    
     const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
       if (user) {
@@ -27,16 +39,18 @@ const App = (props) => {
           });
         });
       } else {
-        setCurrentUser(user);
+        setCurrentUser(user);        
       }
-    });
-
+      
+    });    
     return () => {
+      
       //this is equivalent to class based component's componentWillUnmount lifecycle
       unsubscribeFromAuth();
     };
+    
   }, [setCurrentUser]);
-
+    
   return (
     <div>
       <Header />
@@ -51,19 +65,22 @@ const App = (props) => {
             props.currentUser ? <Navigate to="/" /> : <SignInAndSignUp />
           }
         />
-      </Routes>            
+      </Routes>       
+      <Text isActive={true} >I am a component</Text>     
+      <Text isActive={false}>I am another component</Text>
     </div>
     
   );
 };
 
-const mapStateToProps = ({ user }) => ({
-  currentUser: user.currentUser,
-  isAdmin: user.isAdmin,
+
+
+const mapStateToProps = createStructuredSelector({
+  currentUser: selectCurrentUser  
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),  
+  setCurrentUser: (user) => dispatch(setCurrentUser(user))  ,    
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
