@@ -1,76 +1,93 @@
 import React from "react";
 import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import { Routes, Route } from "react-router";
 
-import { selectCollections } from "../../redux/shop/shop.selector";
+import { selectIsCollectionFetching, selectIsCollectionLoaded } from "../../redux/shop/shop.selector";
+import { fetchCollectionsStart } from "../../redux/shop/shop.actions";
 
 import CollectionsOverview from '../../components/collections-overview/collections-overview.component'
-
-import { Routes, Route } from "react-router";
 import CollectionPage from "../collection/collection.component";
+import WithSpinner from "../../components/with-spinner/with-spinner.component";
+import CollectionsOverviewContainer from "../../components/collections-overview/collections-overview.container";
+import CollectionPageContainer from "../collection/collection.container";
 
-import {firestore, convertCollectionsSnapshotToMap} from '../../firebase/firebase.utils';
-
-import { UpdateCollections } from "../../redux/shop/shop.actions";
-
-import WithSpinner from "../../components/with-spinner/with-spinner.styles";
 
 const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
 const CollectionsPageWithSpinner = WithSpinner(CollectionPage);
 
 
 class ShopPage extends React.Component {  
-  state = {
-    loading: true
-  };
-
-  unsubscribeFromSnapshot = null;
-  componentDidMount() {
-    const collectionRef = firestore.collection('collections');
-
-    this.unsubscribeFromSnapshot = collectionRef.onSnapshot(async snapshot => {
-      const {UpdateCollections} = this.props;
-      const collectionsMap = convertCollectionsSnapshotToMap(snapshot);      
-      UpdateCollections(collectionsMap);
-      this.setState({loading: false});      
-    })
-  }
-  componentWillUnmount() {
-    this.unsubscribeFromSnapshot();
-  }
-
-  // componentDidMount() {    
-  //   //https://crwn-db-4a083.firebaseio.com/collections/
-  //   fetch('https://firestore.googleapis.com/v1/projects/crwn-db-4a083/databases/(default)/documents/collections')
-  //       .then(response => response.json())
-  //       .then(collections => {          
-  //         const collectionsMap = convertCollectionsSnapshotToMap(collections);      
-  //         console.log('shop_api: ' + collectionsMap);
-  //         UpdateCollections(collectionsMap);
-  //         this.setState({loading: false});
-  //       }); 
-  // }
+  
+  componentDidMount() {    
+    const {fetchCollectionsStart} = this.props;
+    fetchCollectionsStart();
+  }    
 
   
   render() {    
-    const {loading} = this.state;
+    const {isCollectionsFetching, isCollectionLoaded} = this.props;
     return (
       <div className="shop-page">
-        <Routes>
-          {/* <Route path="/" element={<CollectionsOverview />} />         */}
-          <Route path="/" element={<CollectionsOverviewWithSpinner isLoading={loading}/>} />        
-          <Route path="/:categoryId" element={<CollectionsPageWithSpinner isLoading={loading} />} />        
+        <Routes>          
+          {/* <Route path="/" element={<CollectionsOverviewWithSpinner isLoading={isCollectionsFetching}/>} />         */}
+          {/* <Route path="/:categoryId" element={<CollectionsPageWithSpinner isLoading={!isCollectionLoaded} />} /> */}
+          <Route path="/" element={ <CollectionsOverviewContainer />} />          
+          <Route path="/:categoryId" element={ <CollectionPageContainer />} />
         </Routes>
       </div>       
     )
   }
 };
-const mapStateToProps = createStructuredSelector({
-  shopItems: selectCollections
+const mapStateToProps = createStructuredSelector({  
+ // isCollectionsFetching: selectIsCollectionFetching,
+  //isCollectionLoaded: selectIsCollectionLoaded
 });
 
 const mapDispatchToProps = dispatch => ({
-  UpdateCollections: collectionsMap => dispatch(UpdateCollections(collectionsMap))
-})
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart())
+});
 
-export default connect(mapStateToProps, mapDispatchToProps) (ShopPage);
+export default connect(null, mapDispatchToProps) (ShopPage);
+
+//following is much simple to understand how to use HOC using withSpinner
+
+
+//Following is refined - multiple HOC - to make it cleaner but I find it hard to understand 
+// so I am keeping code above
+/*
+
+import React from "react";
+import { connect } from "react-redux";
+import { Routes, Route } from "react-router";
+import { fetchCollectionsStartAsync } from "../../redux/shop/shop.actions";
+import CollectionsOverviewContainer from '../../components/collections-overview/collections-overview.container';
+import CollectionPageContainer from '../collection/collection.container';
+
+class ShopPage extends React.Component {    
+  componentDidMount() {    
+    const {fetchCollectionsStartAsync} = this.props;
+    fetchCollectionsStartAsync();
+  }    
+
+  render() {        
+    return (
+      <div className="shop-page">
+        <Routes>          
+          <Route path="/" element={<CollectionsOverviewContainer/>} />        
+          <Route path="/:categoryId" element={<CollectionPageContainer />} />        
+        </Routes>
+      </div>       
+    )
+  }
+};
+const mapDispatchToProps = dispatch => ({
+  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync())
+});
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(ShopPage);
+
+*/

@@ -6,16 +6,15 @@ import ShopPage from "./pages/shop/shop.components";
 import Header from "./components/header/header.component";
 import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import CheckoutPage from "./pages/checkout/checkout.component";
-
-import { auth, createUserProfileDocument, addCollectionAndDocuments } from "./firebase/firebase.utils";
 import { connect } from "react-redux";
-import { setCurrentUser } from "./redux/user/user.actions";
-import { selectCollectionsForPreview } from "./redux/shop/shop.selector";
+import { checkUserSession, setCurrentUser } from "./redux/user/user.actions";
+
 
 //allows you to create reusable styled components 
 import styled from 'styled-components';
 import { createStructuredSelector } from "reselect";
 import { selectCurrentUser } from "./redux/user/user.selector";
+
 
 //using CSS in JS
 const Text = styled.div`
@@ -25,31 +24,34 @@ border:${({isActive}) => isActive ? '1px solid black' : '3px dotted black'};
 `;
 
 
-const App = (props) => {
-  const { setCurrentUser } = props;    
-  useEffect(() => {    
-    const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const userRef = await createUserProfileDocument(user);
-        userRef.onSnapshot((snapshot) => {
-          console.log(snapshot.data());
-          setCurrentUser({
-            id: snapshot.id,
-            ...snapshot.data(),
-          });
-        });
-      } else {
-        setCurrentUser(user);        
-      }
+const App = (props) => {  
+  useEffect(() => {
+    const { checkUserSession } = props;
+    checkUserSession();    
+  });    
+  // useEffect(() => {    
+  //   const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
+  //     if (user) {
+  //       const userRef = await createUserProfileDocument(user);
+  //       userRef.onSnapshot((snapshot) => {
+  //         console.log(snapshot.data());
+  //         setCurrentUser({
+  //           id: snapshot.id,
+  //           ...snapshot.data(),
+  //         });
+  //       });
+  //     } else {
+  //       setCurrentUser(user);        
+  //     }
       
-    });    
-    return () => {
+  //   });    
+  //   return () => {
       
-      //this is equivalent to class based component's componentWillUnmount lifecycle
-      unsubscribeFromAuth();
-    };
+  //     //this is equivalent to class based component's componentWillUnmount lifecycle
+  //     unsubscribeFromAuth();
+  //   };
     
-  }, [setCurrentUser]);
+  // }, [setCurrentUser]);
     
   return (
     <div>
@@ -80,7 +82,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user))  ,    
+  setCurrentUser: (user) => dispatch(setCurrentUser(user)),    
+  checkUserSession: () => dispatch(checkUserSession()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
