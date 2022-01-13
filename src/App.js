@@ -6,84 +6,50 @@ import ShopPage from "./pages/shop/shop.components";
 import Header from "./components/header/header.component";
 import SignInAndSignUp from "./pages/sign-in-and-sign-up/sign-in-and-sign-up.component";
 import CheckoutPage from "./pages/checkout/checkout.component";
-import { connect } from "react-redux";
-import { checkUserSession, setCurrentUser } from "./redux/user/user.actions";
+import { useSelector, useDispatch } from "react-redux";
+import { checkUserSession } from "./redux/user/user.actions";
 
-
-//allows you to create reusable styled components 
-import styled from 'styled-components';
-import { createStructuredSelector } from "reselect";
+//allows you to create reusable styled components
+import styled from "styled-components";
 import { selectCurrentUser } from "./redux/user/user.selector";
-
 
 //using CSS in JS
 const Text = styled.div`
-color:red;
-font-size:28px;
-border:${({isActive}) => isActive ? '1px solid black' : '3px dotted black'};
+  color: red;
+  font-size: 28px;
+  border: ${({ isActive }) =>
+    isActive ? "1px solid black" : "3px dotted black"};
 `;
 
+const App = () => {
+  const currentUser = useSelector(selectCurrentUser);
+  //const isHidden = useSelector((state) => state.cart.hidden);  //--this demoes how to access state
+  const dispatch = useDispatch();
 
-const App = (props) => {  
   useEffect(() => {
-    const { checkUserSession } = props;
-    checkUserSession();    
-  });    
-  // useEffect(() => {    
-  //   const unsubscribeFromAuth = auth.onAuthStateChanged(async (user) => {
-  //     if (user) {
-  //       const userRef = await createUserProfileDocument(user);
-  //       userRef.onSnapshot((snapshot) => {
-  //         console.log(snapshot.data());
-  //         setCurrentUser({
-  //           id: snapshot.id,
-  //           ...snapshot.data(),
-  //         });
-  //       });
-  //     } else {
-  //       setCurrentUser(user);        
-  //     }
-      
-  //   });    
-  //   return () => {
-      
-  //     //this is equivalent to class based component's componentWillUnmount lifecycle
-  //     unsubscribeFromAuth();
-  //   };
-    
-  // }, [setCurrentUser]);
-    
+    dispatch(checkUserSession()); //will only run once because dispatch isn't changing
+  }, [dispatch]);
+
   return (
     <div>
       <Header />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route  path="/shop/*" element={<ShopPage />} />
-        <Route exact path="/checkout" element={<CheckoutPage />} />     
+        <Route path="/shop/*" element={<ShopPage />} />
+        <Route exact path="/checkout" element={<CheckoutPage />} />
         <Route
           exact
           path="/signin"
-          element={
-            props.currentUser ? <Navigate to="/" /> : <SignInAndSignUp />
-          }
+          element={currentUser ? <Navigate to="/" /> : <SignInAndSignUp />}
         />
-      </Routes>       
-      <Text isActive={true} >I am a component</Text>     
+      </Routes>
+      <Text isActive={true}>I am a component</Text>
       <Text isActive={false}>I am another component</Text>
     </div>
-    
   );
 };
 
+export default App;
 
-
-const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser  
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  setCurrentUser: (user) => dispatch(setCurrentUser(user)),    
-  checkUserSession: () => dispatch(checkUserSession()),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+//export default connect(mapStateToProps, mapDispatchToProps)(App);
+//connect is higher order component takes these props values and then passes to App Component

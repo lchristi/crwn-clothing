@@ -1,15 +1,19 @@
 import React from "react";
 import "./header.style.scss";
 import { ReactComponent as Logo } from "../../assets/crown.svg";
-import { auth } from "../../firebase/firebase.utils";
-import { connect } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import CartIcon from "../cart-icon/cart-icon.component";
 import CartDropdown from "../../components/cart-dropdown/cart-dropdown.component";
 
 //the following import are styled components As in css in javascript
 import { HeaderContainer,LogoContainer, OptionsContainer, OptionLink, OptionDiv} from "./header.styles";
 
-const Header = ({ currentUser, hidden }) => {
+import { signOutStart } from "../../redux/user/user.actions";
+
+const Header = () => {    
+  const currentUser = useSelector((state) => state.user.currentUser);
+  const hidden = useSelector((state) => state.cart.hidden);
+  const dispatch = useDispatch(signOutStart);
   return (
     <HeaderContainer>
       <LogoContainer  to="/">
@@ -24,7 +28,7 @@ const Header = ({ currentUser, hidden }) => {
         </OptionLink>
 
         {currentUser ? (
-          <OptionDiv onClick={() => auth.signOut()}>
+          <OptionDiv onClick={() => dispatch(signOutStart())}>
             SIGN OUT
           </OptionDiv>
         ) : (
@@ -39,9 +43,17 @@ const Header = ({ currentUser, hidden }) => {
   );
 };
 
+export default Header;
+
+//keeping the following code for future reference
+/* 
 const mapStateToProps = ({ user: { currentUser }, cart: { hidden } }) => ({
   currentUser,
   hidden,
 });
 
-export default connect(mapStateToProps)(Header);
+const mapDispatchToProps = (dispatch) => ({
+  signOutStart: () => dispatch(signOutStart())
+})
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
+ */

@@ -2,10 +2,10 @@ import { createStore, applyMiddleware } from "redux";
 import logger from "redux-logger";
 import rootReducer from "./root-reducer";
 import {persistStore} from 'redux-persist';
-import thunk from "redux-thunk";
+//import thunk from "redux-thunk";
 
 import createSagaMiddleware from "@redux-saga/core";
-import { fetchCollectionsStart } from "./shop/shop.saga";
+//import { fetchCollectionsStart } from "./shop/shop.saga";
 
 import rootSaga from "./root-saga";
 

@@ -1,4 +1,4 @@
-import { takeEvery, call, put, takeLatest } from 'redux-saga/effects'; //takeEvery is a listener
+import { call, put, takeLatest, all } from 'redux-saga/effects'; //takeEvery is a listener
 import { firestore, convertCollectionsSnapshotToMap } from '../../firebase/firebase.utils';
 import { fetchCollectionsFailure, fetchCollectionsSuccess } from './shop.actions';
 import ShopActionTypes from './shop.type';
@@ -22,3 +22,6 @@ export function* fetchCollectionsStart() {
     //takeLatest - returns the last executed call
 }
 
+export function* shopSagas() {
+    yield all([call(fetchCollectionsStart)]);
+}

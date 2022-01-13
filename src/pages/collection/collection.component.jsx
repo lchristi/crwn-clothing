@@ -2,7 +2,7 @@ import React from "react";
 import { useParams } from "react-router";
 import '../collection/collection.styles.scss';
 
-import { connect, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectCollection } from "../../redux/shop/shop.selector";
 import CollectionItem from '../../components/collection-item/collection-item.component';
 
